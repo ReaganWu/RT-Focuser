@@ -22,7 +22,7 @@
 - **🎯 Single-Input-Single-Output**: Efficient for real-time video streaming
 
 ---
-![image](https://github.com/ReaganWu/RT-Focuser/blob/main/IMG/comparison_vertical.gif)
+![image](https://github.com/ReaganWu/RT-Focuser/blob/main/IMG/comparison_horizontal.gif)
 
 ## 🎯 Introduction
 

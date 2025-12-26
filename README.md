@@ -1,7 +1,3 @@
-# RT-Focuser: A Real-Time Lightweight Model for Edge-side Image Deblurring
-
-RT-Focuser is an effiicient U-shaped deblurring model for real-time scenerios.
-
 # RT-Focuser: Real-Time Lightweight Model for Edge-side Image Deblurring
 
 [![Paper](https://img.shields.io/badge/Paper-ICTA%202025-blue)](https://github.com/ReaganWu/RT-Focuser)
@@ -15,7 +11,9 @@ RT-Focuser is an effiicient U-shaped deblurring model for real-time scenerios.
 > *Accepted to IEEE ICTA 2025*
 
 ---
+![img]("https://github.com/ReaganWu/RT-Focuser/IMG/RT-Focuser_Arch.png")
 
+---
 ## 🔥 Highlights
 
 - **⚡ Ultra-Fast**: 6ms per frame on RTX 3090, **146 FPS on iPhone 15**
@@ -217,7 +215,7 @@ We are preparing an **extended arXiv version** with:
 
 ## 📧 Contact
 
-- **Email**: wq.fang@siat.ac.cn, zheng.wang@siat.ac.cn
+- **Email**: wuzhuoyu11@gmail.com
 - **Issues**: Please open an issue in this repository
 
 ---

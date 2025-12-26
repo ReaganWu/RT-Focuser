@@ -11,7 +11,7 @@
 > *Accepted to IEEE ICTA 2025*
 
 ---
-![image]("https://github.com/ReaganWu/RT-Focuser/blob/main/IMG/RT-Focuser_Arch.png")
+![image](https://github.com/ReaganWu/RT-Focuser/blob/main/IMG/RT-Focuser_Arch.png)
 
 ---
 ## 🔥 Highlights

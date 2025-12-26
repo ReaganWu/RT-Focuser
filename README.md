@@ -11,7 +11,6 @@
 > *Accepted to IEEE ICTA 2025*
 
 ---
-![image](https://github.com/ReaganWu/RT-Focuser/blob/main/IMG/RT-comparison_vertical.gif)
 ![image](https://github.com/ReaganWu/RT-Focuser/blob/main/IMG/RT-Focuser_Perf.png)
 
 ---
@@ -23,6 +22,7 @@
 - **🎯 Single-Input-Single-Output**: Efficient for real-time video streaming
 
 ---
+![image](https://github.com/ReaganWu/RT-Focuser/blob/main/IMG/comparison_vertical.gif)
 
 ## 🎯 Introduction
 

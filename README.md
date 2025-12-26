@@ -11,7 +11,7 @@
 > *Accepted to IEEE ICTA 2025*
 
 ---
-![image](https://github.com/ReaganWu/RT-Focuser/blob/main/IMG/RT-Focuser_Arch.png)
+![image](https://github.com/ReaganWu/RT-Focuser/blob/main/IMG/RT-Focuser_Perf.png)
 
 ---
 ## 🔥 Highlights
@@ -39,6 +39,7 @@ Motion blur from camera or object movement severely degrades image quality and p
 2. **Multi-Level Integrated Aggregation (MLIA)**: Hierarchical encoder feature fusion
 3. **Cross-source Fusion Block (X-Fuse)**: Progressive decoder refinement with multi-source inputs
 
+![image](https://github.com/ReaganWu/RT-Focuser/blob/main/IMG/RT-Focuser_Arch.png)
 ---
 
 ## 📊 Performance

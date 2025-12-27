@@ -99,37 +99,62 @@ pip install -r requirements.txt
 
 ```bash
 # Download from release page
-wget https://github.com/ReaganWu/RT-Focuser/releases/download/v1.0/rt_focuser_gopro.pth \
-  -O checkpoints/rt_focuser_gopro.pth
+wget https://github.com/ReaganWu/RT-Focuser/blob/main/Pretrained_Weights/GoPro_RT_Focuser_Standard_256.pth \
+  -O rt_focuser_gopro.pth
 ```
 
-### Inference on Single Image
+### Test RT-Focuser on Single Image
+
+Pytorch Version
+> Input: *Sample/Blurry.png*
+> 
+> Output: *Sample/Deblur_F32.png*
 
 ```bash
-python inference.py \
-  --input_path ./test_images/blurry.png \
-  --output_path ./results/sharp.png \
-  --checkpoint ./checkpoints/rt_focuser_gopro.pth \
-  --device cuda
+python Inference_Image_Torch.py
+```
+ONNX Version
+> Input: *Sample/Blurry.png*
+> 
+> Output: *Sample/Deblur_W8A16.png*
+```bash
+python Inference_Image_ONNX.py
+```
+### RT-Focuser CLI Usage via ONNX (Image, Video)
+Image Inference
+```bash
+python onnx_image_inference.py \
+  --model Pretrained_Weights/rt_focuser_wint8_afp16.onnx \
+  --input Sample/Blurry.png \
+  --output Sample/Deblur_W8A16.png \
+  --width 256 \
+  --height 256
+```
+Video Inference
+```bash
+python onnx_video_inference.py \
+  --model Pretrained_Weights/rt_focuser_wint8_afp16.onnx \
+  --input Test.mp4 \
+  --output output.mp4
 ```
 
 ### Python API Usage
 
 ```python
 import torch
-from models.rt_focuser import RTFocuser
+from model.rt_focuser import RTFocuser
 from PIL import Image
 import torchvision.transforms as transforms
 
 # Load model
 model = RTFocuser()
-checkpoint = torch.load('checkpoints/rt_focuser_gopro.pth')
+checkpoint = torch.load('Pretrained_Weights/GoPro_RT_Focuser_Standard_256.pth')
 model.load_state_dict(checkpoint['model'])
 model.eval().cuda()
 
 # Prepare image
 transform = transforms.ToTensor()
-blurry_img = Image.open('blurry.png')
+blurry_img = Image.open('Sample/Blurry.png')
 input_tensor = transform(blurry_img).unsqueeze(0).cuda()
 
 # Inference
@@ -138,57 +163,96 @@ with torch.no_grad():
 ```
 
 ---
+## ⚙️ Hybrid Quantization (Configurable)
 
-## 📦 Model Export
+RT-Focuser supports configurable hybrid post-training quantization:
 
-### Export to ONNX
+* Weight precision: `fp32 | int8`
+* Activation precision: `fp32 | fp16 | int8`
+* Compatible with ONNX export & deployment
 
-```bash
-python export_onnx.py \
-  --checkpoint ./checkpoints/rt_focuser_gopro.pth \
-  --output ./exports/rt_focuser.onnx \
-  --input_size 256 256
-```
+The interface is unified — just set the quantization modes you want.
 
-### Export to CoreML (iOS/macOS)
+❕should be noticed that, you should download GoPro or your self-prepared dataset before using the quantization program.
 
-```bash
-python export_coreml.py \
-  --checkpoint ./checkpoints/rt_focuser_gopro.pth \
-  --output ./exports/RTFocuser.mlmodel
-```
+```python
+from torch.utils.data import DataLoader
+from rt_focuser import RTFocuser
+from PTQ_Transfer_ONNX import (
+    GoProFullSizeDataset,
+    CalibrationDataset,
+    apply_hybrid_quantization_v2
+)
 
-### Quantization (INT8)
+import torch
 
-```bash
-python quantize_int8.py \
-  --checkpoint ./checkpoints/rt_focuser_gopro.pth \
-  --calibration_data ./data/GoPro/train/ \
-  --output ./exports/rt_focuser_int8.onnx
+# 1) Load model checkpoint
+model = RTFocuser()
+ckpt = torch.load("./checkpoints/rt_focuser_gopro.pth", map_location="cpu")
+model.load_state_dict(ckpt["model"])
+
+# 2) Build calibration dataloader
+fullset = GoProFullSizeDataset("./data/GoPro", mode="test")
+calibset = CalibrationDataset(fullset, num_samples=100, patch_size=256)
+calib_loader = DataLoader(calibset, batch_size=4, shuffle=True)
+
+# 3) Choose quantization configuration
+model = apply_hybrid_quantization_v2(
+    model=model,
+    calibration_loader=calib_loader,
+    device="cuda",
+
+    # Supported modes:
+    #   weight_dtype:  fp32 | int8
+    #   activation_dtype: fp32 | fp16 | int8
+    weight_dtype="int8",
+    activation_dtype="fp16"
+)
+
+# 4) Export quantized ONNX model
+dummy = torch.randn(1, 3, 256, 256).cuda().half()
+torch.onnx.export(
+    model,
+    dummy,
+    "./exports/rt_focuser_hybrid.onnx",
+    opset_version=17,
+    input_names=["input"],
+    output_names=["output"]
+)
 ```
 
 ---
 
-## 🎓 Training
+### ✔️ Available Quantization Modes
 
-### Prepare GoPro Dataset
+| Weights | Activations | Usage Scenario                            |
+| ------- | ----------- | ----------------------------------------- |
+| `fp32`  | `fp32`      | baseline / reference                      |
+| `int8`  | `fp32`      | low-risk compression                      |
+| `int8`  | `fp16`      | **hybrid performance mode (recommended)** |
+| `int8`  | `int8`      | aggressive compression                    |
+| `fp32`  | `fp16`      | GPU / CoreML friendly                     |
 
-```bash
-# Download dataset
-wget http://data.cv.snu.ac.kr:8008/webdav/dataset/GOPRO/GOPRO_Large.zip
-unzip GOPRO_Large.zip -d ./data/
+Switch modes by changing parameters:
+
+```python
+weight_dtype="int8"
+activation_dtype="fp16"
 ```
 
-### Train from Scratch
+No other code changes are needed.
 
-```bash
-python train.py \
-  --data_root ./data/GoPro \
-  --batch_size 16 \
-  --patch_size 256 \
-  --epochs 3000 \
-  --lr 1e-4
-```
+---
+
+### 📤 Output
+
+The exported ONNX model contains the quantized weights and activation precision configuration and can be used for:
+
+* TensorRT
+* ONNX Runtime
+* RKNN
+* Edge devices
+* Mobile / CoreML (FP16 friendly)
 
 ---
 

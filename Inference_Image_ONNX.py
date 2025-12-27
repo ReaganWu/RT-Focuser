@@ -74,7 +74,7 @@ def save_image(tensor, output_path):
     # Save
     img = Image.fromarray(img_np)
     img.save(output_path)
-    print(f"✅ Saved result to: {output_path}")
+    print(f"Saved result to: {output_path}")
 
 
 def run_inference(model_path, input_path, output_path, size=None):

@@ -6,14 +6,16 @@
 
 **Official PyTorch implementation of RT-Focuser (ICTA 2025)**
 
-> **RT-Focuser: A Real-Time Lightweight Model for Edge-side Image Deblurring**  
-> Zhuoyu Wu, Wenhui Ou, Qiawei Zheng, Jiayan Yang, Quanjun Wang, Wenqi Fang, Zheng Wang, Yongkui Yang, Heshan Li  
+> **RT-Focuser: A Real-Time Lightweight Model for Edge-side Image Deblurring**
+> Zhuoyu Wu, Wenhui Ou, Qiawei Zheng, Jiayan Yang, Quanjun Wang, Wenqi Fang, Zheng Wang, Yongkui Yang, Heshan Li
 > *Accepted to IEEE ICTA 2025*
 
 ---
+
 ![image](https://github.com/ReaganWu/RT-Focuser/blob/main/IMG/RT-Focuser_Perf.png)
 
 ---
+
 ## 🔥 Highlights
 
 - **⚡ Ultra-Fast**: 6ms per frame on RTX 3090, **146 FPS on iPhone 15**
@@ -22,13 +24,15 @@
 - **🎯 Single-Input-Single-Output**: Efficient for real-time video streaming
 
 ---
+
 ![image](https://github.com/ReaganWu/RT-Focuser/blob/main/IMG/comparison_horizontal.gif)
 
 ## 🎯 Introduction
 
 Motion blur from camera or object movement severely degrades image quality and poses challenges for real-time applications such as:
+
 - 🚗 Autonomous driving
-- 🚁 UAV perception  
+- 🚁 UAV perception
 - 🏥 Medical imaging
 - 📹 Video streaming
 
@@ -40,32 +44,29 @@ Motion blur from camera or object movement severely degrades image quality and p
 2. **Multi-Level Integrated Aggregation (MLIA)**: Hierarchical encoder feature fusion
 3. **Cross-source Fusion Block (X-Fuse)**: Progressive decoder refinement with multi-source inputs
 
-![image](https://github.com/ReaganWu/RT-Focuser/blob/main/IMG/RT-Focuser_Arch.png)
----
-
 ## 📊 Performance
 
 ### Quantitative Results on GoPro Dataset
 
-| Model | PSNR↑ | SSIM↑ | Params↓ | GMACs↓ | Time (s)↓ |
-|-------|-------|-------|---------|--------|-----------|
-| SRN | 29.97 | 0.9013 | 8.06M | 109.07 | 2.52 |
-| MIMO-UNet | 31.73 | 0.9500 | 16.10M | 154.41 | 0.014 |
-| DeepDeblur | 29.23 | 0.9160 | 11.70M | 62.85 | 4.33 |
-| EDVR | 31.54 | 0.9260 | 23.61M | 33.44 | 0.21 |
-| STSM | 33.41 | 0.9512 | 14.40M | 92.51 | 0.16 |
+| Model                | PSNR↑          | SSIM↑           | Params↓        | GMACs↓         | Time (s)↓      |
+| -------------------- | --------------- | ---------------- | --------------- | --------------- | --------------- |
+| SRN                  | 29.97           | 0.9013           | 8.06M           | 109.07          | 2.52            |
+| MIMO-UNet            | 31.73           | 0.9500           | 16.10M          | 154.41          | 0.014           |
+| DeepDeblur           | 29.23           | 0.9160           | 11.70M          | 62.85           | 4.33            |
+| EDVR                 | 31.54           | 0.9260           | 23.61M          | 33.44           | 0.21            |
+| STSM                 | 33.41           | 0.9512           | 14.40M          | 92.51           | 0.16            |
 | **RT-Focuser** | **30.67** | **0.9005** | **5.85M** | **15.76** | **0.006** |
 
 ✨ **RT-Focuser achieves 100× speedup compared to large models while maintaining competitive quality!**
 
 ### Multi-Platform Deployment Speed
 
-| Platform | FPS↑ | Backend | Details |
-|----------|------|---------|---------|
-| **iPhone 15 (A16 Bionic)** | **146.72** | CoreML | Mobile deployment |
-| **RTX 3090 GPU** | **154.42** | PyTorch CUDA | Desktop inference |
-| **Intel Xeon CPU** | **22.74** | OpenVINO | CPU optimization |
-| Intel Xeon CPU | 14.95 | ONNX Runtime | General backend |
+| Platform                         | FPS↑            | Backend      | Details           |
+| -------------------------------- | ---------------- | ------------ | ----------------- |
+| **iPhone 15 (A16 Bionic)** | **146.72** | CoreML       | Mobile deployment |
+| **RTX 3090 GPU**           | **154.42** | PyTorch CUDA | Desktop inference |
+| **Intel Xeon CPU**         | **22.74**  | OpenVINO     | CPU optimization  |
+| Intel Xeon CPU                   | 14.95            | ONNX Runtime | General backend   |
 
 *Note: Measured on 256×256 input, batch size 1*
 
@@ -74,6 +75,7 @@ Motion blur from camera or object movement severely degrades image quality and p
 ## 🚀 Installation
 
 ### Requirements
+
 ```bash
 Python >= 3.8
 PyTorch >= 1.12.0
@@ -81,12 +83,14 @@ CUDA >= 11.3 (for GPU)
 ```
 
 ### Clone Repository
+
 ```bash
 git clone https://github.com/ReaganWu/RT-Focuser.git
 cd RT-Focuser
 ```
 
 ### Install Dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
@@ -106,22 +110,29 @@ wget https://github.com/ReaganWu/RT-Focuser/blob/main/Pretrained_Weights/GoPro_R
 ### Test RT-Focuser on Single Image
 
 Pytorch Version
+
 > Input: *Sample/Blurry.png*
-> 
+>
 > Output: *Sample/Deblur_F32.png*
 
 ```bash
 python Inference_Image_Torch.py
 ```
+
 ONNX Version
+
 > Input: *Sample/Blurry.png*
-> 
+>
 > Output: *Sample/Deblur_W8A16.png*
+
 ```bash
 python Inference_Image_ONNX.py
 ```
+
 ### RT-Focuser CLI Usage via ONNX (Image, Video)
+
 Image Inference
+
 ```bash
 python onnx_image_inference.py \
   --model Pretrained_Weights/rt_focuser_wint8_afp16.onnx \
@@ -130,7 +141,9 @@ python onnx_image_inference.py \
   --width 256 \
   --height 256
 ```
+
 Video Inference
+
 ```bash
 python onnx_video_inference.py \
   --model Pretrained_Weights/rt_focuser_wint8_afp16.onnx \
@@ -163,6 +176,7 @@ with torch.no_grad():
 ```
 
 ---
+
 ## ⚙️ Hybrid Quantization (Configurable)
 
 RT-Focuser supports configurable hybrid post-training quantization:
@@ -225,13 +239,13 @@ torch.onnx.export(
 
 ### ✔️ Available Quantization Modes
 
-| Weights | Activations | Usage Scenario                            |
-| ------- | ----------- | ----------------------------------------- |
-| `fp32`  | `fp32`      | baseline / reference                      |
-| `int8`  | `fp32`      | low-risk compression                      |
-| `int8`  | `fp16`      | **hybrid performance mode (recommended)** |
-| `int8`  | `int8`      | aggressive compression                    |
-| `fp32`  | `fp16`      | GPU / CoreML friendly                     |
+| Weights  | Activations | Usage Scenario                                  |
+| -------- | ----------- | ----------------------------------------------- |
+| `fp32` | `fp32`    | baseline / reference                            |
+| `int8` | `fp32`    | low-risk compression                            |
+| `int8` | `fp16`    | **hybrid performance mode (recommended)** |
+| `int8` | `int8`    | aggressive compression                          |
+| `fp32` | `fp16`    | GPU / CoreML friendly                           |
 
 Switch modes by changing parameters:
 
@@ -259,6 +273,7 @@ The exported ONNX model contains the quantized weights and activation precision 
 ## 🔬 Extended Version (Coming Soon)
 
 We are preparing an **extended arXiv version** with:
+
 - ✅ Comprehensive quantization analysis (PTQ/QAT)
 - ✅ Out-of-distribution generalization
 - ✅ Multi-platform deployment details
@@ -269,6 +284,16 @@ We are preparing an **extended arXiv version** with:
 ## 📝 Citation
 
 ```bibtex
+@misc{wu2025rtfocuserrealtimelightweightmodel,
+      title={RT-Focuser: A Real-Time Lightweight Model for Edge-side Image Deblurring}, 
+      author={Zhuoyu Wu and Wenhui Ou and Qiawei Zheng and Jiayan Yang and Quanjun Wang and Wenqi Fang and Zheng Wang and Yongkui Yang and Heshan Li},
+      year={2025},
+      eprint={2512.21975},
+      archivePrefix={arXiv},
+      primaryClass={eess.IV},
+      url={https://arxiv.org/abs/2512.21975}, 
+}
+
 @inproceedings{wu2025rtfocuser,
   title={RT-Focuser: A Real-Time Lightweight Model for Edge-side Image Deblurring},
   author={Wu, Zhuoyu and Ou, Wenhui and Zheng, Qiawei and Yang, Jiayan and Wang, Quanjun and Fang, Wenqi and Wang, Zheng and Yang, Yongkui and Li, Heshan},

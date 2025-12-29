@@ -1,7 +1,7 @@
 # RT-Focuser: Real-Time Lightweight Model for Edge-side Image Deblurring
 
 [![Paper](https://img.shields.io/badge/Paper-ICTA%202025-blue)](https://github.com/ReaganWu/RT-Focuser)
-[![arXiv](https://img.shields.io/badge/arXiv-Coming%20Soon-red)](https://arxiv.org/abs/xxxx.xxxxx)
+[![arXiv](https://img.shields.io/badge/arXiv-2512.21975-red "https://arxiv.org/abs/2512.21975")](https://arxiv.org/abs/xxxx.xxxxx)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 **Official PyTorch implementation of RT-Focuser (ICTA 2025)**

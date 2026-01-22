@@ -1,6 +1,6 @@
 # RT-Focuser: Real-Time Lightweight Model for Edge-side Image Deblurring
 
-[![Paper](https://img.shields.io/badge/Paper-ICTA%202025-blue)](https://github.com/ReaganWu/RT-Focuser)
+[![Paper](https://img.shields.io/badge/Paper-ICTA%202025-blue)](https://ieeexplore.ieee.org/document/11329854)
 [![Arxiv](https://img.shields.io/badge/arXiv-2512.21975-red)](https://arxiv.org/abs/2512.21975)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -177,6 +177,114 @@ with torch.no_grad():
 
 ---
 
+## 🚀 Training
+
+A minimal and clean training framework for image deblurring on GoPro dataset.
+
+### Requirements
+
+```bash
+pip install torch torchvision
+pip install albumentations
+pip install scikit-image
+pip install Pillow
+pip install tqdm
+```
+
+### Dataset Structure
+
+Your GoPro dataset should be organized as:
+
+```
+GOPRO_Large/
+├── train/
+│   ├── GOPR0372_07_00/
+│   │   ├── blur_gamma/
+│   │   └── sharp/
+│   ├── GOPR0372_07_01/
+│   └── ...
+└── test/
+    ├── GOPR0384_11_00/
+    └── ...
+```
+
+### Quick Start
+
+1. **Prepare your model**: Implement your deblurring model
+
+2. **Configure paths**: Edit `train.py` to set your dataset path
+
+3. **Run training**:
+```bash
+python train.py
+```
+
+4. **Checkpoints**: Models will be saved to `./Pretrained_Weights/`
+   - `best_model.pth`: Best model based on PSNR
+   - `checkpoint_epoch_X.pth`: Checkpoint every 100 epochs
+
+### Training Configuration
+
+Default settings in `train.py`:
+- Learning rate: **1e-4**
+- Epochs: **3000**
+- Batch size: 4
+- Optimizer: Adam
+- Scheduler: CosineAnnealingLR
+- Crop size: 256×256
+- Data augmentation: Random crop + Horizontal flip
+
+### File Structure
+
+- `setup\dataset.py`: GoPro dataset loader
+- `setup\trainer.py`: Training and validation functions
+- `train.py`: Main training script (modify this for your use case)
+
+### Example Training Code
+
+```python
+import torch
+import torch.optim as optim
+from torch.optim.lr_scheduler import CosineAnnealingLR
+from dataset import get_dataloaders
+from trainer import train_model
+
+# Your model
+from rt_focuser import RTFocuser
+
+# Configuration
+DATA_ROOT = "/path/to/your/gopro/dataset"
+DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+# Load dataset
+train_loader, val_loader = get_dataloaders(
+    root_dir=DATA_ROOT,
+    batch_size=4,
+    num_workers=4
+)
+
+# Initialize model
+model = RTFocuser()
+
+# Setup optimizer and scheduler
+optimizer = optim.Adam(model.parameters(), lr=1e-4)
+lr_scheduler = CosineAnnealingLR(optimizer, T_max=3000, eta_min=1e-6)
+
+# Train
+best_psnr = train_model(
+    model=model,
+    train_loader=train_loader,
+    val_loader=val_loader,
+    optimizer=optimizer,
+    lr_scheduler=lr_scheduler,
+    num_epochs=3000,
+    device=DEVICE,
+    save_dir='./Pretrained_Weights'
+)
+```
+
+---
+
 ## ⚙️ Hybrid Quantization (Configurable)
 
 RT-Focuser supports configurable hybrid post-training quantization:
@@ -294,12 +402,16 @@ We are preparing an **extended arXiv version** with:
       url={https://arxiv.org/abs/2512.21975}, 
 }
 
-@inproceedings{wu2025rtfocuser,
-  title={RT-Focuser: A Real-Time Lightweight Model for Edge-side Image Deblurring},
+@INPROCEEDINGS{IEEE_wu2025rtfocuser,
   author={Wu, Zhuoyu and Ou, Wenhui and Zheng, Qiawei and Yang, Jiayan and Wang, Quanjun and Fang, Wenqi and Wang, Zheng and Yang, Yongkui and Li, Heshan},
-  booktitle={International Conference on Integrated Circuits, Technologies and Applications (ICTA)},
-  year={2025}
-}
+  booktitle={2025 IEEE International Conference on Integrated Circuits, Technologies and Applications (ICTA)}, 
+  title={RT-Focuser: A Real-Time Lightweight Model for Edge-Side Image Deblurring}, 
+  year={2025},
+  volume={},
+  number={},
+  pages={255-256},
+  keywords={Deblurring;Integrated circuit technology;Image quality;Image edge detection;Computational modeling;Graphics processing units;Feature extraction;Real-time systems;Decoding;Integrated circuit modeling;Image Deblurring;Real-Time Inference;Lightweight Network;Edge Deployment},
+  doi={10.1109/ICTA68203.2025.11329854}}
 ```
 
 ---

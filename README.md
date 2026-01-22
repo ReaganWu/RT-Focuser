@@ -177,7 +177,7 @@ with torch.no_grad():
 
 ---
 
-## 🚀 Training
+## 🛸 Training
 
 A minimal and clean training framework for image deblurring on GoPro dataset.
 

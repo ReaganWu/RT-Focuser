@@ -102,9 +102,7 @@ pip install -r requirements.txt
 ### Download Pretrained Weights
 
 ```bash
-# Download from release page
-wget https://github.com/ReaganWu/RT-Focuser/blob/main/Pretrained_Weights/GoPro_RT_Focuser_Standard_256.pth \
-  -O rt_focuser_gopro.pth
+# Pretrained weights are already included in this repository under Pretrained_Weights/
 ```
 
 ### Test RT-Focuser on Single Image
@@ -134,7 +132,7 @@ python Inference_Image_ONNX.py
 Image Inference
 
 ```bash
-python onnx_image_inference.py \
+python Inference_Image_ONNX.py \
   --model Pretrained_Weights/rt_focuser_wint8_afp16.onnx \
   --input Sample/Blurry.png \
   --output Sample/Deblur_W8A16.png \
@@ -145,30 +143,36 @@ python onnx_image_inference.py \
 Video Inference
 
 ```bash
-python onnx_video_inference.py \
+python Inference_Video_ONNX.py \
   --model Pretrained_Weights/rt_focuser_wint8_afp16.onnx \
-  --input Test.mp4 \
-  --output output.mp4
+  --input Sample/Test.mp4 \
+  --output Sample/output.mp4
 ```
 
 ### Python API Usage
 
 ```python
 import torch
-from model.rt_focuser import RTFocuser
+from model.rt_focuser_model import RT_Focuser_Standard
 from PIL import Image
 import torchvision.transforms as transforms
 
 # Load model
-model = RTFocuser()
-checkpoint = torch.load('Pretrained_Weights/GoPro_RT_Focuser_Standard_256.pth')
-model.load_state_dict(checkpoint['model'])
-model.eval().cuda()
+model = RT_Focuser_Standard()
+checkpoint = torch.load(
+    'Pretrained_Weights/GoPro_RT_Focuser_Standard_256.pth',
+    map_location='cpu'
+)
+model.load_state_dict(checkpoint, strict=True)
+model.eval()
 
 # Prepare image
-transform = transforms.ToTensor()
-blurry_img = Image.open('Sample/Blurry.png')
-input_tensor = transform(blurry_img).unsqueeze(0).cuda()
+transform = transforms.Compose([
+    transforms.Resize((256, 256)),
+    transforms.ToTensor()
+])
+blurry_img = Image.open('Sample/Blurry.png').convert('RGB')
+input_tensor = transform(blurry_img).unsqueeze(0)
 
 # Inference
 with torch.no_grad():

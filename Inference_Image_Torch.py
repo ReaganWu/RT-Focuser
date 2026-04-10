@@ -27,4 +27,4 @@ with torch.no_grad():
 # save results
 output_img = transforms.ToPILImage()(output.squeeze(0).cpu().clamp(0, 1))
 output_img.save("Sample/Deblur_F32_Torch.png")
-print("✅ Deblurred image saved to: /home/wuzy/project/Deblur/Deblurred_RT_Focuser.png")
+print("✅ Deblurred image saved to: Sample/Deblur_F32_Torch.png")

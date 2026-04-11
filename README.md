@@ -2,6 +2,7 @@
 
 [![Paper](https://img.shields.io/badge/Paper-ICTA%202025-blue)](https://ieeexplore.ieee.org/document/11329854)
 [![Arxiv](https://img.shields.io/badge/arXiv-2512.21975-red)](https://arxiv.org/abs/2512.21975)
+[![Hugging Face](https://img.shields.io/badge/Hugging%20Face-Model-yellow?logo=huggingface&logoColor=white)](https://huggingface.co/ReaganWZY/RT-Focuser)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 **Official PyTorch implementation of RT-Focuser (ICTA 2025)**

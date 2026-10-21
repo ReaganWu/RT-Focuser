@@ -4,6 +4,23 @@
 [![Arxiv](https://img.shields.io/badge/arXiv-2512.21975-red)](https://arxiv.org/abs/2512.21975)
 [![Hugging Face](https://img.shields.io/badge/Hugging%20Face-Model-yellow?logo=huggingface&logoColor=white)](https://huggingface.co/ReaganWZY/RT-Focuser)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![RT-Focuser-V2](https://img.shields.io/badge/NEW-RT--Focuser--V2-7c3aed?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ReaganWu/RT-Focuser-v2)
+
+## 🚀 News · RT-Focuser-V2 is here!
+
+> [!IMPORTANT]
+> **Meet the next generation of RT-Focuser.**
+> RT-Focuser-V2 introduces **Efficient Global Attention (E-GAM)** and **four selectable restoration exits** for flexible quality–latency trade-offs on edge devices.
+>
+> **[Explore RT-Focuser-V2 →](https://github.com/ReaganWu/RT-Focuser-v2)** · [Model & inference code](https://github.com/ReaganWu/RT-Focuser-v2/blob/main/rt_focuser_v2.py) · [Getting started](https://github.com/ReaganWu/RT-Focuser-v2#installation)
+
+| ⚡ Four operating modes | 🧩 Efficient attention | 📱 Deployment tools |
+| :--- | :--- | :--- |
+| **Fastest · Fast · Balanced · Accurate** — select Y1–Y4 before inference. | **E-GAM + Separable Linear Attention (SLA)** for progressive cross-scale fusion. | Inference, training, evaluation, and **ONNX / Core ML export** code. |
+
+*This repository hosts the original RT-Focuser. Visit the [V2 repository](https://github.com/ReaganWu/RT-Focuser-v2) for the latest implementation.*
+
+---
 
 **Official PyTorch implementation of RT-Focuser (ICTA 2025)**
 

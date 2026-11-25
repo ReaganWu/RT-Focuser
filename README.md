@@ -129,7 +129,7 @@ Pytorch Version
 
 > Input: *Sample/Blurry.png*
 >
-> Output: *Sample/Deblur_F32.png*
+> Output: *Sample/Deblur_F32_Torch.png* (`Sample/Deblur_F32.png` is the reference result)
 
 ```bash
 python Inference_Image_Torch.py
@@ -158,7 +158,7 @@ python Inference_Image_ONNX.py \
   --height 256
 ```
 
-Video Inference
+Video Inference (replace `Sample/Test.mp4` with your own video; no sample video is included)
 
 ```bash
 python Inference_Video_ONNX.py \
@@ -232,7 +232,7 @@ GOPRO_Large/
 
 ### Quick Start
 
-1. **Prepare your model**: Implement your deblurring model
+1. **Prepare your model**: `train.py` uses `RT_Focuser_Standard` by default; swap in your own model if needed
 
 2. **Configure paths**: Edit `train.py` to set your dataset path
 
@@ -258,8 +258,8 @@ Default settings in `train.py`:
 
 ### File Structure
 
-- `setup\dataset.py`: GoPro dataset loader
-- `setup\trainer.py`: Training and validation functions
+- `setup/dataset.py`: GoPro dataset loader
+- `setup/trainer.py`: Training and validation functions
 - `train.py`: Main training script (modify this for your use case)
 
 ### Example Training Code
@@ -268,11 +268,11 @@ Default settings in `train.py`:
 import torch
 import torch.optim as optim
 from torch.optim.lr_scheduler import CosineAnnealingLR
-from dataset import get_dataloaders
-from trainer import train_model
+from setup.dataset import get_dataloaders
+from setup.trainer import train_model
 
 # Your model
-from rt_focuser import RTFocuser
+from model.rt_focuser_model import RT_Focuser_Standard
 
 # Configuration
 DATA_ROOT = "/path/to/your/gopro/dataset"
@@ -286,7 +286,7 @@ train_loader, val_loader = get_dataloaders(
 )
 
 # Initialize model
-model = RTFocuser()
+model = RT_Focuser_Standard()
 
 # Setup optimizer and scheduler
 optimizer = optim.Adam(model.parameters(), lr=1e-4)
@@ -320,23 +320,27 @@ The interface is unified — just set the quantization modes you want.
 ❕should be noticed that, you should download GoPro or your self-prepared dataset before using the quantization program.
 
 ```python
+import os
+import torch
 from torch.utils.data import DataLoader
-from rt_focuser import RTFocuser
+from model.rt_focuser_model import RT_Focuser_Standard
 from PTQ_Transfer_ONNX import (
     GoProFullSizeDataset,
     CalibrationDataset,
-    apply_hybrid_quantization_v2
+    apply_hybrid_quantization_v2,
+    export_to_onnx_v2
 )
 
-import torch
-
-# 1) Load model checkpoint
-model = RTFocuser()
-ckpt = torch.load("./checkpoints/rt_focuser_gopro.pth", map_location="cpu")
-model.load_state_dict(ckpt["model"])
+# 1) Load model weights (the released .pth is a plain state_dict)
+model = RT_Focuser_Standard()
+state_dict = torch.load(
+    "Pretrained_Weights/GoPro_RT_Focuser_Standard_256.pth",
+    map_location="cpu"
+)
+model.load_state_dict(state_dict, strict=True)
 
 # 2) Build calibration dataloader
-fullset = GoProFullSizeDataset("./data/GoPro", mode="test")
+fullset = GoProFullSizeDataset("/path/to/your/gopro/dataset", mode="test")
 calibset = CalibrationDataset(fullset, num_samples=100, patch_size=256)
 calib_loader = DataLoader(calibset, batch_size=4, shuffle=True)
 
@@ -344,7 +348,7 @@ calib_loader = DataLoader(calibset, batch_size=4, shuffle=True)
 model = apply_hybrid_quantization_v2(
     model=model,
     calibration_loader=calib_loader,
-    device="cuda",
+    device="cuda" if torch.cuda.is_available() else "cpu",
 
     # Supported modes:
     #   weight_dtype:  fp32 | int8
@@ -353,17 +357,17 @@ model = apply_hybrid_quantization_v2(
     activation_dtype="fp16"
 )
 
-# 4) Export quantized ONNX model
-dummy = torch.randn(1, 3, 256, 256).cuda().half()
-torch.onnx.export(
+# 4) Export quantized ONNX model (dummy input dtype follows activation_dtype)
+os.makedirs("exports", exist_ok=True)
+export_to_onnx_v2(
     model,
-    dummy,
-    "./exports/rt_focuser_hybrid.onnx",
-    opset_version=17,
-    input_names=["input"],
-    output_names=["output"]
+    "exports/rt_focuser_wint8_afp16.onnx",
+    activation_dtype="fp16",
+    input_size=(1, 3, 256, 256)
 )
 ```
+
+You can also run the full pipeline (quantize, export, evaluate) directly: set `WEIGHT_DTYPE`, `ACTIVATION_DTYPE` and `GOPRO_ROOT` in the `__main__` block of `PTQ_Transfer_ONNX.py`, then run `python PTQ_Transfer_ONNX.py`.
 
 ---
 
@@ -397,17 +401,6 @@ The exported ONNX model contains the quantized weights and activation precision 
 * RKNN
 * Edge devices
 * Mobile / CoreML (FP16 friendly)
-
----
-
-## 🔬 Extended Version (Coming Soon)
-
-We are preparing an **extended arXiv version** with:
-
-- ✅ Comprehensive quantization analysis (PTQ/QAT)
-- ✅ Out-of-distribution generalization
-- ✅ Multi-platform deployment details
-- ✅ Energy efficiency analysis
 
 ---
 
